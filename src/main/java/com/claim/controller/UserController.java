@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,12 +19,19 @@ import com.claim.repository.UserRepository;
 
 //Kenn & Hiram used @Controller instead... isn't that for MVC
 //this is what I want to use since I don't have views right, since I'm using react... so I can now use @RequestMapping & @ResponseBody (to return object via JSON instead of returning a view)
+@CrossOrigin
 @RestController
 public class UserController {
 	
-	@Autowired
+	
 	//might use this instead if setup service -- private UsersService userService;
 	private UserRepository userRepository;
+	
+	@Autowired
+	public UserController(UserRepository userRepository) {
+		super();
+		this.userRepository = userRepository;
+	}
 
 	//Register - Create a new user with credentials  --I borrowed this logic from Lamar
 	//@this is getting requests from browsers that request this URL, the request will send JSON values with user info.. it will be in the RequestBody since this is a post. We will save that info to our repo
@@ -41,7 +49,7 @@ public class UserController {
 			method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity<Optional<User>> login(@RequestBody User user) {
-		Optional<User> u = userRepository.findById(user.getEmail());
+		Optional<User> u = userRepository.findByEmail(user.getEmail());
 		
 		if(u.isPresent() && u.get().getPassword().equals(user.getPassword())) {
 			return new ResponseEntity<>(u, HttpStatus.OK);
@@ -57,7 +65,7 @@ public class UserController {
 	//we probably don't use @RequestBody in the parameter since this is a GET method... so if it's in the header, we can just pass it directly as a parameter??
 	@ResponseBody
 	private ResponseEntity<Optional<User>> findUserByEmail(String email) {
-		Optional<User> user = userRepository.findById(email);
+		Optional<User> user = userRepository.findByEmail(email);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 		//but what about if there is no such user... don't we need to return an error like we did with login?  
 		//or are we just sending back null b/c the actual request was good, we were able to execute what we were supposed to... and then if they do anything with user.. they will see that it's null
