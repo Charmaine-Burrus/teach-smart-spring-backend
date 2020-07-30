@@ -18,17 +18,22 @@ public class User {
 	@Column(name="email", unique = true)
 	private String email;
 	
-	@Column(name="password")
-	private String password;
-	
 	@Column(name="first_name")
 	private String firstName;
 	
 	@Column(name="last_name")
 	private String lastName;
-	
-	@Column(name="school")
-	private String school;
+
+	@Column(name="picture_url")
+	private String pictureUrl;
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
+
+	public void setPictureUrl(String pictureUrl) {
+		this.pictureUrl = pictureUrl;
+	}
 
 	public Long getId() {
 		return id;
@@ -44,14 +49,6 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getFirstName() {
@@ -70,20 +67,10 @@ public class User {
 		this.lastName = lastName;
 	}
 
-	public String getSchool() {
-		return school;
-	}
-
-	public void setSchool(String school) {
-		this.school = school;
-	}
-
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", email=" + email + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", school=" + school + "]";
+		return "User [id=" + id + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", pictureUrl=" + pictureUrl + "]";
 	}
-	
-	
 
 }
