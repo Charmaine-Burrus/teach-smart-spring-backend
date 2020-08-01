@@ -1,16 +1,21 @@
 package com.claim.service;
 
+import com.claim.model.IdToken;
 import com.claim.model.TSAssignment;
 import com.claim.model.TSClass;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+//import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.Base64;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.classroom.ClassroomScopes;
 import com.google.api.services.classroom.model.*;
@@ -24,9 +29,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.List;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
+@Component
 public class GoogleClassroomService implements CoursesService {
 	
 	//most of this came from https://developers.google.com/classroom/quickstart/java
@@ -36,11 +52,11 @@ public class GoogleClassroomService implements CoursesService {
     //private static final List<String> SCOPES = Collections.singletonList(ClassroomScopes.CLASSROOM_COURSES_READONLY);
     private static final List<String> SCOPES = Arrays.asList(ClassroomScopes.CLASSROOM_COURSES_READONLY, ClassroomScopes.CLASSROOM_COURSEWORK_STUDENTS_READONLY, SheetsScopes.SPREADSHEETS_READONLY); 
     private static final String CREDENTIALS_FILE_PATH = "/client_secret.json";
-    
-    
+    private RestTemplate restTemplate = new RestTemplate();
     
     
     /**
+     * PROBABLY WON'T NEED THESE TWO NOW THAT I'M JUST USING THE AUTH TOKENS
      * Creates an authorized Credential object.
      * @param HTTP_TRANSPORT The network HTTP Transport.
      * @return An authorized Credential object.
@@ -62,63 +78,75 @@ public class GoogleClassroomService implements CoursesService {
                 .build();
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-    }
-    
-    private List<Course> getCourses() throws GeneralSecurityException, IOException{
-    	// Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        Classroom service = new Classroom.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(HTTP_TRANSPORT))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-
-        // List the first 10 courses that the user has access to.
-        ListCoursesResponse response = null;
-		try {
-			response = service.courses().list()
-			        .setPageSize(10)
-			        .execute();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        List<Course> courses = response.getCourses();
-        if (courses == null || courses.size() == 0) {
-            System.out.println("No courses found.");
-        } else {
-            System.out.println("Courses:");
-            for (Course course : courses) {
-                System.out.printf("%s\n", course.getName());
-            }
-        }
-        return courses;
     }  
+    
 
+    private List<Course> getCourses(String authToken){
+
+		
+    	final String uri = "https://classroom.googleapis.com/v1/courses?access_token="+authToken;
+    	
+    	RestTemplate restTemplate = new RestTemplate();
+    	
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+    	System.out.println("TOKE ::::> "+authToken);
+    	//OAuth 2 access token
+//    	headers.setBearerAuth(authToken);
+    	//access_token
+
+    	HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+        
+    	ResponseEntity<ListCoursesResponse> response = restTemplate.getForEntity(uri, ListCoursesResponse.class);
+    	
+    	return response.getBody().getCourses();
+    	
+		/* SECOND TRY
+		 * MY LISTCOURSES RESPONSE HttpHeaders headers = new HttpHeaders();
+		 * headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		 * headers.add("User-Agent", "Spring's RestTemplate" ); // value can be whatever
+		 * headers.add("Authorization", "Bearer"+authToken );
+		 * 
+		 * ResponseEntity<ListCoursesResponse> response = restTemplate.exchange(
+		 * "https://classroom.googleapis.com/v1/courses", HttpMethod.GET, new
+		 * HttpEntity<>("parameters", headers), ListCoursesResponse.class );
+		 * 
+		 * return response.getBody().getCourses();
+		 */
+    }
+    	
+
+    
 	@Override
-	public List<TSClass> listClasses(){
+	public List<Course> listClasses(String authToken){
 		List<Course> courses = null;
-		try {
-			courses = getCourses();
-		} catch (GeneralSecurityException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (courses == null) {
-			return null;
-		}
-		List<TSClass> classes = new ArrayList<TSClass>();
-		for (Course course : courses) {
-            TSClass thisClass = new TSClass();
-            thisClass.setClassId(Long.parseLong(course.getId()));
-            thisClass.setClassName(course.getName());
-            classes.add(thisClass);
-        }
-	    return classes;
+		return  getCourses(authToken);
+//		if (courses == null) {
+//			return null;
+//		}
+//		List<TSClass> classes = new ArrayList<TSClass>();
+//		for(int i=0; i< courses.size(); i++) {
+////			Course course = new ObjectMapper().convertValue( courses.get(i).get("id"), Course.class);
+//			try {
+//	            TSClass thisClass = new TSClass();
+//	            thisClass.setClassId(Long.parseLong((String)courses.get(i).get("id")));
+//	            thisClass.setClassName((String)courses.get(i).get("name"));
+//	            classes.add(thisClass);
+//			}catch(Exception e) {
+//				System.out.println("Failed to retrieve course ::> "+i);
+//			}
+//        };
+//	    return classes;
 	}
 
 	@Override
-	public List<TSAssignment> listAssignments(long courseId) {
+	public List<TSAssignment> listAssignments(String authToken, long courseId) {
 		List<TSAssignment> assignments = new ArrayList<TSAssignment>();
 		return assignments;
 	}
+
+
+
 
 }

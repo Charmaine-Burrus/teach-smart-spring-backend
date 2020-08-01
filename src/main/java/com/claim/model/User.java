@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="user")
@@ -26,6 +27,9 @@ public class User {
 
 	@Column(name="picture_url")
 	private String pictureUrl;
+
+	@Transient
+	private String googleTokenId;
 
 	public String getPictureUrl() {
 		return pictureUrl;
@@ -67,6 +71,14 @@ public class User {
 		this.lastName = lastName;
 	}
 
+	public String getGoogleTokenId() {
+		return googleTokenId;
+	}
+
+	public void setGoogleTokenId(String googleTokenId) {
+		this.googleTokenId = googleTokenId;
+	}
+	
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName

@@ -3,7 +3,7 @@ package com.claim.model;
 public class IdToken {
 	
 	//this is the String that comes from google for /login
-	private String tokenId;
+	private String googleTokenId;
 	private String email;
 	private String firstName;
 	private String lastName;
@@ -33,17 +33,16 @@ public class IdToken {
 	public void setPictureUrl(String pictureUrl) {
 		this.pictureUrl = pictureUrl;
 	}
-	public String getTokenId() {
-		return tokenId;
+	public String getGoogleTokenId() {
+		return googleTokenId;
 	}
-	public void setTokenId(String tokenId) {
-		this.tokenId = tokenId;
+	public void setGoogleTokenId(String googleTokenId) {
+		this.googleTokenId = googleTokenId;
 	}
 	@Override
 	public String toString() {
-		return "IdToken [tokenId=" + tokenId + ", email=" + email + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", pictureUrl=" + pictureUrl + "]";
+		return "IdToken [googleTokenId=" + googleTokenId + ", email=" + email + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", pictureUrl=" + pictureUrl + "]";
 	}
-	
 
 }

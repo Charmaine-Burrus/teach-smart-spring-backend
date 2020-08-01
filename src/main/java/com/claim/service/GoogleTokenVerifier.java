@@ -34,7 +34,7 @@ public class GoogleTokenVerifier implements TokenVerifier {
 						  Payload payload = idToken.getPayload();
 						  
 						  // Get profile information from payload & set myIdToken
-						  myIdToken.setTokenId(idTokenString);
+						  myIdToken.setGoogleTokenId(idTokenString);
 						  myIdToken.setEmail(payload.getEmail());
 						  myIdToken.setLastName((String) payload.get("family_name"));
 						  myIdToken.setFirstName((String) payload.get("given_name"));
