@@ -4,6 +4,7 @@ import com.claim.model.IdToken;
 import com.claim.model.TSAssignment;
 import com.claim.model.TSClass;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -11,15 +12,17 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-//import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Base64;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.classroom.ClassroomScopes;
+import com.google.api.services.classroom.model.CourseWork;
 import com.google.api.services.classroom.model.*;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import com.google.api.services.sheets.v4.model.Sheet;
+import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.classroom.Classroom;
 
 
@@ -83,7 +86,6 @@ public class GoogleClassroomService implements CoursesService {
 
     private List<Course> getCourses(String authToken){
 
-		
     	final String uri = "https://classroom.googleapis.com/v1/courses?access_token="+authToken;
     	
     	RestTemplate restTemplate = new RestTemplate();
@@ -102,25 +104,12 @@ public class GoogleClassroomService implements CoursesService {
     	
     	return response.getBody().getCourses();
     	
-		/* SECOND TRY
-		 * MY LISTCOURSES RESPONSE HttpHeaders headers = new HttpHeaders();
-		 * headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-		 * headers.add("User-Agent", "Spring's RestTemplate" ); // value can be whatever
-		 * headers.add("Authorization", "Bearer"+authToken );
-		 * 
-		 * ResponseEntity<ListCoursesResponse> response = restTemplate.exchange(
-		 * "https://classroom.googleapis.com/v1/courses", HttpMethod.GET, new
-		 * HttpEntity<>("parameters", headers), ListCoursesResponse.class );
-		 * 
-		 * return response.getBody().getCourses();
-		 */
     }
     	
 
     
 	@Override
 	public List<Course> listClasses(String authToken){
-		List<Course> courses = null;
 		return  getCourses(authToken);
 //		if (courses == null) {
 //			return null;
@@ -140,12 +129,88 @@ public class GoogleClassroomService implements CoursesService {
 //	    return classes;
 	}
 
-	@Override
-	public List<TSAssignment> listAssignments(String authToken, long courseId) {
-		List<TSAssignment> assignments = new ArrayList<TSAssignment>();
+	private List<CourseWork> listAssignments(TSClass tSClass) {
+		
+		final String uri = "https://classroom.googleapis.com/v1/courses/" + tSClass.getClassId() + "/courseWork?access_token=" + tSClass.getAccessToken();
+    	
+    	RestTemplate restTemplate = new RestTemplate();
+    	
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+    	HttpEntity<String> entity = new HttpEntity<String>(headers);
+        
+    	ResponseEntity<ListCourseWorkResponse> response = restTemplate.getForEntity(uri, ListCourseWorkResponse.class);
+    	
+    	//so this is a java.util.LinkedHashMap
+    	List<CourseWork> assignments = response.getBody().getCourseWork();
+//    	forEach(BiConsumer(String, String))
+    	
+		
+    	List<TSAssignment> tSAssignments = new ArrayList<TSAssignment>();
+		/*
+		 * ObjectMapper mapper = new ObjectMapper();
+		 * mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		 * mapper.configure(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE, false);
+		 * mapper.configure(DeserializationFeature.FAIL_ON_UNRESOLVED_OBJECT_IDS,
+		 * false);
+		 * 
+		 * //getting error here... java.util.LinkedHashMap cannot be cast to
+		 * com.google.api.services.classroom.model.CourseWork
+		 * 
+		 * for (int j=0; j<assignments.size(); j++) { CourseWork assignment =
+		 * mapper.convertValue(assignments.get(j), CourseWork.class); TSAssignment
+		 * tSAssignment = new TSAssignment();
+		 * tSAssignment.setAssignmentName(assignment.getTitle()); //TODO: work on
+		 * setting up date
+		 * 
+		 * List<Material> materials = assignment.getMaterials(); for (int i=0;
+		 * i<materials.size(); i++) { if (materials.get(i).getForm().getResponseUrl() !=
+		 * null) { tSAssignment.setHasResponse(true);
+		 * tSAssignment.setResponseUrl(materials.get(i).getForm().getResponseUrl());
+		 * tSAssignment.setFormPictureUrl(materials.get(i).getForm().getThumbnailUrl());
+		 * break; } }
+		 * 
+		 * tSAssignments.add(tSAssignment); }
+		 */
+		
 		return assignments;
+		
 	}
+	
+	public List<CourseWork> listAssignmentsWithSheet(TSClass tSClass) {
+		return listAssignments(tSClass);
+		/*
+		 * List<TSAssignment> assignmentsWithSheet = new ArrayList<TSAssignment>();
+		 * 
+		 * for (TSAssignment assignment : tSAssignments) { if
+		 * (assignment.getHasResponse()) { assignmentsWithSheet.add(assignment); } }
+		 * 
+		 * return assignmentsWithSheet;
+		 */
+	}
+	
+	
+	public List<Sheet> getAssignmentResults(TSAssignment tSAssignment){
+		String responseUrl = tSAssignment.getResponseUrl();
+		
+		String spreadSheetId = responseUrl.substring((responseUrl.indexOf("spreadsheets/d/")+15), responseUrl.indexOf("?usp="));
+		System.out.println("spreadSheetId is:" + spreadSheetId);
+		
+    	final String uri = "https://sheets.googleapis.com/v4/spreadsheets/" + spreadSheetId  + "?access_token=" + tSAssignment.getAccessToken();
+    	System.out.println("uri is:" + uri);
+    	
+    	RestTemplate restTemplate = new RestTemplate();
+    	
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 
+    	HttpEntity<String> entity = new HttpEntity<String>(headers);
+        
+    	ResponseEntity<Spreadsheet> response = restTemplate.getForEntity(uri, Spreadsheet.class);
+    	
+    	return response.getBody().getSheets();
+    	
+    }
 
 
 

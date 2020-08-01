@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claim.model.IdToken;
+import com.claim.model.TSAssignment;
 import com.claim.model.TSClass;
 import com.claim.model.User;
 import com.claim.repository.UserRepository;
@@ -23,6 +24,8 @@ import com.claim.service.CoursesService;
 import com.claim.service.GoogleTokenVerifier;
 import com.claim.service.TokenVerifier;
 import com.google.api.services.classroom.model.Course;
+import com.google.api.services.classroom.model.CourseWork;
+import com.google.api.services.sheets.v4.model.Sheet;
 
 @CrossOrigin
 @RestController
@@ -77,13 +80,30 @@ public class UserController {
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			method=RequestMethod.POST)
 	@ResponseBody
-	//FROM HIRAM; HERE I NEED TO TAKE IN TOKENID FROM FRONTEND
 	private ResponseEntity<List<Course>> listCourses(@RequestBody IdToken idToken){
-		System.out.println("processing /listCourses");
 		List<Course> courses = classroomService.listClasses(idToken.getGoogleTokenId());
-		System.out.println("FINISHED processing /listCourses. Courses are:" + courses);
 		return new ResponseEntity<>(courses, HttpStatus.OK);
 	}	
+	
+	@RequestMapping(value="/listAssignmentsWithSheet",
+			produces=MediaType.APPLICATION_JSON_VALUE,
+			method=RequestMethod.POST)
+	@ResponseBody
+	private ResponseEntity<List<CourseWork>> listAssignmentsWithSheet(@RequestBody TSClass tSClass){
+		List<CourseWork> assignments = classroomService.listAssignmentsWithSheet(tSClass);
+		return new ResponseEntity<>(assignments, HttpStatus.OK);
+	}	
+	
+	@RequestMapping(value="/addAssignmentResults",
+			produces=MediaType.APPLICATION_JSON_VALUE,
+			method=RequestMethod.POST)
+	private void addAssignmentResults(@RequestBody TSAssignment tSAssignment){
+		List<Sheet> sheets = classroomService.getAssignmentResults(tSAssignment);
+		for (Sheet sheet : sheets) {
+			System.out.println(sheet);
+		}
+	}
+	
 	
 	//two basic gets for testing.... idk if I will actually use these in front end or not  --also borrowed from Lamar
 	@RequestMapping(value="/findUserByEmail",

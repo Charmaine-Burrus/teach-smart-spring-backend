@@ -4,12 +4,18 @@ import java.util.Date;
 
 public class TSAssignment {
 	
+	private String accessToken;
 	private String assignmentName;
 	private Boolean hasResponse;
 	private String responseUrl;
 	private String formPictureUrl;
-	private Date dueDate;
 	
+	public String getAccessToken() {
+		return accessToken;
+	}
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
 	public String getAssignmentName() {
 		return assignmentName;
 	}
@@ -34,16 +40,12 @@ public class TSAssignment {
 	public void setFormPictureUrl(String formPictureUrl) {
 		this.formPictureUrl = formPictureUrl;
 	}
-	public Date getDueDate() {
-		return dueDate;
-	}
-	public void setDueDate(Date dueDate) {
-		this.dueDate = dueDate;
-	}
 	@Override
 	public String toString() {
-		return "Assignment [assignmentName=" + assignmentName + ", hasResponse=" + hasResponse + ", responseUrl="
-				+ responseUrl + ", formPictureUrl=" + formPictureUrl + ", dueDate=" + dueDate + "]";
+		return "TSAssignment [accessToken=" + accessToken + ",\nassignmentName=" + assignmentName + ", hasResponse="
+				+ hasResponse + ", responseUrl=" + responseUrl + ", formPictureUrl=" + formPictureUrl + "]";
 	}
+
+	
 	
 }

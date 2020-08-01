@@ -4,6 +4,7 @@ public class TSClass {
 	
 	private long classId;
 	private String className;
+	private String accessToken;
 	
 	public long getClassId() {
 		return classId;
@@ -19,6 +20,14 @@ public class TSClass {
 
 	public void setClassName(String className) {
 		this.className = className;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
 
 	@Override
