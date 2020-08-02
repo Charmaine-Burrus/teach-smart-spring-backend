@@ -21,6 +21,6 @@ public interface CoursesService {
 	
 	List<CourseWork> listAssignmentsWithSheet(TSClass tSClass);
 	
-	List<Sheet> getAssignmentResults(TSAssignment tSAssignment);
+//	List<Sheet> getAssignmentResults(TSAssignment tSAssignment);
 
 }

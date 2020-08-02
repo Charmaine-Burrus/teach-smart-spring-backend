@@ -21,6 +21,7 @@ import com.claim.model.TSClass;
 import com.claim.model.User;
 import com.claim.repository.UserRepository;
 import com.claim.service.CoursesService;
+import com.claim.service.GoogleClassroomService;
 import com.claim.service.GoogleTokenVerifier;
 import com.claim.service.TokenVerifier;
 import com.google.api.services.classroom.model.Course;
@@ -98,10 +99,12 @@ public class UserController {
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			method=RequestMethod.POST)
 	private void addAssignmentResults(@RequestBody TSAssignment tSAssignment){
-		List<Sheet> sheets = classroomService.getAssignmentResults(tSAssignment);
-		for (Sheet sheet : sheets) {
-			System.out.println(sheet);
-		}
+//		List<Sheet> sheets = classroomService.getAssignmentResults(tSAssignment);
+		GoogleClassroomService classroomService = new GoogleClassroomService();
+		classroomService.getAssignmentResults(tSAssignment);
+//		for (Sheet sheet : sheets) {
+//			System.out.println(sheet);
+//		}
 	}
 	
 	

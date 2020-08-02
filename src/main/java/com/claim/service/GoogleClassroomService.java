@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +45,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 
 @Component
 public class GoogleClassroomService implements CoursesService {
@@ -190,7 +194,8 @@ public class GoogleClassroomService implements CoursesService {
 	}
 	
 	
-	public List<Sheet> getAssignmentResults(TSAssignment tSAssignment){
+//	public List<Sheet> getAssignmentResults(TSAssignment tSAssignment){
+	public void getAssignmentResults(TSAssignment tSAssignment){
 		String responseUrl = tSAssignment.getResponseUrl();
 		
 		String spreadSheetId = responseUrl.substring((responseUrl.indexOf("spreadsheets/d/")+15), responseUrl.indexOf("?usp="));
@@ -200,15 +205,41 @@ public class GoogleClassroomService implements CoursesService {
     	System.out.println("uri is:" + uri);
     	
     	RestTemplate restTemplate = new RestTemplate();
+    	System.out.println("completed restTemplate");
     	
     	HttpHeaders headers = new HttpHeaders();
     	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-
-    	HttpEntity<String> entity = new HttpEntity<String>(headers);
-        
-    	ResponseEntity<Spreadsheet> response = restTemplate.getForEntity(uri, Spreadsheet.class);
+    	System.out.println("completed headers");
     	
-    	return response.getBody().getSheets();
+    	HttpEntity<String> entity = new HttpEntity<String>(headers);
+    	System.out.println("completed Http");
+    	
+//    	ResponseEntity<Spreadsheet> response = restTemplate.getForEntity(uri, Spreadsheet.class);
+    	LinkedHashMap<String, String> response = restTemplate.getForObject(uri, LinkedHashMap.class);
+    	System.out.println("completed response");
+    	
+//    	return response.getBody().getSheets();
+    	System.out.println(response);
+//    	response.entrySet().forEach( entry -> {
+//    	    System.out.println(entry.getKey() + "=>" + entry.getValue().getClass().toString());
+//    	});
+    	
+    	//sheets is an array of linkedHashMaps?
+//    	String sheets = response.get("properties");
+    	System.out.println("Sheets are:" + response.get("properties"));
+    	
+    	//get(Object key)
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+//    	ResponseEntity<ListCourseWorkResponse> response1 = restTemplate.getForEntity(uri, ListCourseWorkResponse.class);
+//    	
+//    	//so this is a java.util.LinkedHashMap
+//    	List<CourseWork> assignments = response1.getBody().getCourseWork();
     	
     }
 
