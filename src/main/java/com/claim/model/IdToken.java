@@ -2,7 +2,7 @@ package com.claim.model;
 
 public class IdToken {
 	
-	//this is the String that comes from google for /login
+	//this is the String that comes back from Google when we use GoogleLogin
 	private String googleTokenId;
 	private String email;
 	private String firstName;

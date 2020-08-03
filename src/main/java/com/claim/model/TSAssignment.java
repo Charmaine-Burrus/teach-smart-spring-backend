@@ -1,7 +1,5 @@
 package com.claim.model;
 
-import java.util.Date;
-
 public class TSAssignment {
 	
 	private String accessToken;

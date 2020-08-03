@@ -34,7 +34,7 @@ public class UserController {
 	
 	//might use this instead if setup service -- private UsersService userService;
 	private UserRepository userRepository;
-	CoursesService classroomService;
+	private CoursesService classroomService;
 	
 	@Autowired
 	public UserController(UserRepository userRepository, CoursesService classroomService) {
@@ -72,8 +72,7 @@ public class UserController {
 			}
 			//return a response body with the user info
 			return new ResponseEntity<>(realUser, HttpStatus.OK);
-		}
-		
+		}	
 		return null;
 	}	
 	
@@ -86,12 +85,12 @@ public class UserController {
 		return new ResponseEntity<>(courses, HttpStatus.OK);
 	}	
 	
-	@RequestMapping(value="/listAssignmentsWithSheet",
+	@RequestMapping(value="/listAssignments",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			method=RequestMethod.POST)
 	@ResponseBody
 	private ResponseEntity<List<CourseWork>> listAssignmentsWithSheet(@RequestBody TSClass tSClass){
-		List<CourseWork> assignments = classroomService.listAssignmentsWithSheet(tSClass);
+		List<CourseWork> assignments = classroomService.listAssignments(tSClass);
 		return new ResponseEntity<>(assignments, HttpStatus.OK);
 	}	
 	
@@ -99,16 +98,22 @@ public class UserController {
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			method=RequestMethod.POST)
 	private void addAssignmentResults(@RequestBody TSAssignment tSAssignment){
-//		List<Sheet> sheets = classroomService.getAssignmentResults(tSAssignment);
-		GoogleClassroomService classroomService = new GoogleClassroomService();
-		classroomService.getAssignmentResults(tSAssignment);
-//		for (Sheet sheet : sheets) {
-//			System.out.println(sheet);
-//		}
+		//look at CSVTest for a model
+		//will Autowire an Assignment Service
+		//call assignmentService.addAssignmentResulsFromCSV(tSAssignment) which will save it to the database
+		//they might also need to send the loggedInUser so I can find them by email... the assessment will be mapped to a user
 	}
 	
+	//will use something similar to this to get all the assignments for one user
+	@RequestMapping(value="/findAllUsers",
+			produces=MediaType.APPLICATION_JSON_VALUE,
+			method=RequestMethod.GET)
+	@ResponseBody
+	private ResponseEntity<List<User>>findAllUsers() {
+		List<User> listOfUsers = userRepository.findAll();
+		return new ResponseEntity<>(listOfUsers, HttpStatus.OK);
+	}
 	
-	//two basic gets for testing.... idk if I will actually use these in front end or not  --also borrowed from Lamar
 	@RequestMapping(value="/findUserByEmail",
 			produces=MediaType.APPLICATION_JSON_VALUE,
 			method=RequestMethod.GET)
@@ -119,15 +124,6 @@ public class UserController {
 		return new ResponseEntity<>(user, HttpStatus.OK);
 		//but what about if there is no such user... don't we need to return an error like we did with login?  
 		//or are we just sending back null b/c the actual request was good, we were able to execute what we were supposed to... and then if they do anything with user.. they will see that it's null
-	}
-	
-	@RequestMapping(value="/findAllUsers",
-			produces=MediaType.APPLICATION_JSON_VALUE,
-			method=RequestMethod.GET)
-	@ResponseBody
-	private ResponseEntity<List<User>>findAllUsers() {
-		List<User> listOfUsers = userRepository.findAll();
-		return new ResponseEntity<>(listOfUsers, HttpStatus.OK);
 	}
 
 }

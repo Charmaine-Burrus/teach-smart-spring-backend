@@ -11,20 +11,17 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 
 public class GoogleTokenVerifier implements TokenVerifier {
 	
-	//will parse the JSON
 	private static final JacksonFactory jsonFactory = new JacksonFactory();
 
 	@Override
 	public IdToken verify(String idTokenString) {
 		IdToken myIdToken = new IdToken();
 		
-		//HELP - should this be a field?
-		NetHttpTransport httpTransport = new NetHttpTransport(); //Alternatively I could use ApacheHttpTransport
+		NetHttpTransport httpTransport = new NetHttpTransport();
 		String clientId = "859167518630-2vfc35jchg1lndfmto5jolrvtsvf1kae.apps.googleusercontent.com";
 		
 		//will make a request to the tokeninfo endpoint with the transport you give it and use the JSONFactory to create a parser to parse the response
 		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(httpTransport, jsonFactory)
-				// Specify the CLIENT_ID of the app that accesses the backend:
 				.setAudience(Collections.singletonList(clientId))
 				.build();
 				
@@ -43,8 +40,7 @@ public class GoogleTokenVerifier implements TokenVerifier {
 						  return myIdToken;
 	
 					} else {
-					  //HELP - should it throw an exception instead? .. other example logged a warning and didn't return anything
-					  System.out.println("Invalid ID token.");
+						throw new Exception("Invalid ID token.");
 					}
 				}catch (Exception e) {
 		            e.printStackTrace();

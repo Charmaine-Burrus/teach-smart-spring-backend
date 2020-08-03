@@ -11,15 +11,9 @@ import com.google.api.services.classroom.model.CourseWork;
 import com.google.api.services.sheets.v4.model.Sheet;
 
 public interface CoursesService {
-	
-//	List<TSClass> listClasses(String authToken);
 	List<Course> listClasses(String authToken);
 	
-//	String authenticate() throws GeneralSecurityException, IOException;
-	
-//	List<TSAssignment> listAssignments(TSClass tSClass);
-	
-	List<CourseWork> listAssignmentsWithSheet(TSClass tSClass);
+	List<CourseWork> listAssignments(TSClass tSClass);
 	
 //	List<Sheet> getAssignmentResults(TSAssignment tSAssignment);
 
