@@ -1,8 +1,8 @@
 # teach-smart
- Web application for teachers to analyze & visualize Google Classroom assessment data. This application works in conjunction with teachsmart-assignment-microservice and teachsmart-react-frontend.
+ Web application for teachers to analyze & visualize Google Classroom assessment data. This application works in conjunction with https://github.com/Charmaine-Burrus/teach-smart-react-frontend and https://github.com/Charmaine-Burrus/teachsmart-assignment-microservice.
  
  
-#### About Us
+## About Us
 ![](src/main/resources/static/images/github-screenshots/TeachSmartAboutUs.PNG)
 
 
@@ -11,7 +11,7 @@
 ![](src/main/resources/static/images/github-screenshots/SignInGif.gif)
 
 Integrated with Google Login. New users are prompted for permission to access both their Google Classroom & Google Sheets info. 
-If this Google account is new to our site, a TeachSmart account is generated for the user. If the Google account is that of a returning user, that account is accessed.
+If this Google account is new to our site, a TeachSmart account is generated for the user. If the Google account is that of a returning user, the user is directed to that account.
 
 #### Add Assessment
 ![](src/main/resources/static/images/github-screenshots/AddAssessmentGif.gif)
