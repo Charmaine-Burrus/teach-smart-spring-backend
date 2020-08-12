@@ -1,10 +1,12 @@
 # teach-smart
- Web application for teachers to analyze & visualize Google Classroom assessment data.
+ Web application for teachers to analyze & visualize Google Classroom assessment data. This application works in conjunction with teachsmart-assignment-microservice and teachsmart-react-frontend.
  
-## Take a Look!
+ 
 #### About Us
 ![](src/main/resources/static/images/github-screenshots/TeachSmartAboutUs.PNG)
 
+
+## Take a Look!
 #### Sign Up or Sign In
 ![](src/main/resources/static/images/github-screenshots/SignInGif.gif)
 
