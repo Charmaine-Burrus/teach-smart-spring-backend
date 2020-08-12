@@ -32,7 +32,6 @@ import com.google.api.services.sheets.v4.model.Sheet;
 @RestController
 public class UserController {
 	
-	//might use this instead if setup service -- private UsersService userService;
 	private UserRepository userRepository;
 	private CoursesService classroomService;
 	
@@ -47,13 +46,10 @@ public class UserController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			method = RequestMethod.POST)
 	@ResponseBody
-	//we're basically making a temporary token here...
 	public ResponseEntity<User> login(@RequestBody IdToken token) {
 		if (token != null && token.getGoogleTokenId() != null) {
-			//TO DO: probably want to autowire in the future
 			TokenVerifier tokenVerifier = new GoogleTokenVerifier();
 			IdToken idToken = tokenVerifier.verify(token.getGoogleTokenId());
-			//check whether this user already exists
 			User realUser = null;
 			Optional<User> user = userRepository.findByEmail(idToken.getEmail());
 			if (user.isPresent()) {
@@ -61,7 +57,6 @@ public class UserController {
 				realUser.setGoogleTokenId(idToken.getGoogleTokenId());
 			}
 			else {
-				//Otherwise make a new user with Google info from the idToken //TO DO: why isn't this added to the database??
 				realUser = new User();
 				realUser.setEmail(idToken.getEmail());
 				realUser.setFirstName(idToken.getFirstName());
@@ -70,7 +65,6 @@ public class UserController {
 				realUser.setGoogleTokenId(idToken.getGoogleTokenId());
 				userRepository.save(realUser);
 			}
-			//return a response body with the user info
 			return new ResponseEntity<>(realUser, HttpStatus.OK);
 		}	
 		return null;
@@ -93,37 +87,5 @@ public class UserController {
 		List<CourseWork> assignments = classroomService.listAssignments(tSClass);
 		return new ResponseEntity<>(assignments, HttpStatus.OK);
 	}	
-	
-	@RequestMapping(value="/addAssignmentResults",
-			produces=MediaType.APPLICATION_JSON_VALUE,
-			method=RequestMethod.POST)
-	private void addAssignmentResults(@RequestBody TSAssignment tSAssignment){
-		//look at CSVTest for a model
-		//will Autowire an Assignment Service
-		//call assignmentService.addAssignmentResulsFromCSV(tSAssignment) which will save it to the database
-		//they might also need to send the loggedInUser so I can find them by email... the assessment will be mapped to a user
-	}
-	
-	//will use something similar to this to get all the assignments for one user
-	@RequestMapping(value="/findAllUsers",
-			produces=MediaType.APPLICATION_JSON_VALUE,
-			method=RequestMethod.GET)
-	@ResponseBody
-	private ResponseEntity<List<User>>findAllUsers() {
-		List<User> listOfUsers = userRepository.findAll();
-		return new ResponseEntity<>(listOfUsers, HttpStatus.OK);
-	}
-	
-	@RequestMapping(value="/findUserByEmail",
-			produces=MediaType.APPLICATION_JSON_VALUE,
-			method=RequestMethod.GET)
-	//we probably don't use @RequestBody in the parameter since this is a GET method... so if it's in the header, we can just pass it directly as a parameter??
-	@ResponseBody
-	private ResponseEntity<Optional<User>> findUserByEmail(String email) {
-		Optional<User> user = userRepository.findByEmail(email);
-		return new ResponseEntity<>(user, HttpStatus.OK);
-		//but what about if there is no such user... don't we need to return an error like we did with login?  
-		//or are we just sending back null b/c the actual request was good, we were able to execute what we were supposed to... and then if they do anything with user.. they will see that it's null
-	}
 
 }

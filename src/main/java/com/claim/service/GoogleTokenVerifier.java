@@ -20,7 +20,7 @@ public class GoogleTokenVerifier implements TokenVerifier {
 		NetHttpTransport httpTransport = new NetHttpTransport();
 		String clientId = "859167518630-2vfc35jchg1lndfmto5jolrvtsvf1kae.apps.googleusercontent.com";
 		
-		//will make a request to the tokeninfo endpoint with the transport you give it and use the JSONFactory to create a parser to parse the response
+		//make a request to the tokeninfo endpoint with the transport you give it and use the JSONFactory to create a parser to parse the response
 		GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(httpTransport, jsonFactory)
 				.setAudience(Collections.singletonList(clientId))
 				.build();

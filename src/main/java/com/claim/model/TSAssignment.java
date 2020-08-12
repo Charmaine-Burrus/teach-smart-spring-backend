@@ -43,7 +43,5 @@ public class TSAssignment {
 		return "TSAssignment [accessToken=" + accessToken + ",\nassignmentName=" + assignmentName + ", hasResponse="
 				+ hasResponse + ", responseUrl=" + responseUrl + ", formPictureUrl=" + formPictureUrl + "]";
 	}
-
-	
 	
 }

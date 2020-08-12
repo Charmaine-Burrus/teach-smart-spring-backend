@@ -31,7 +31,7 @@ public class GoogleClassroomService implements CoursesService {
 
     	ResponseEntity<ListCoursesResponse> response = restTemplate.getForEntity(uri, ListCoursesResponse.class);
     	
-    	//this is actually a java.util.LinkedHashMap representing a List<Course>
+    	//here Jackson provides a java.util.LinkedHashMap representing a List<Course>
     	List<Course> classes = response.getBody().getCourses();	
     	return classes;
 	}
@@ -47,7 +47,7 @@ public class GoogleClassroomService implements CoursesService {
         
     	ResponseEntity<ListCourseWorkResponse> response = restTemplate.getForEntity(uri, ListCourseWorkResponse.class);
     	
-    	//this is actually a java.util.LinkedHashMap representing a List<CourseWork>
+    	//here Jackson provides a java.util.LinkedHashMap representing a List<CourseWork>
     	List<CourseWork> assignments = response.getBody().getCourseWork();   	
 		return assignments;
 
