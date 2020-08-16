@@ -11,22 +11,18 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.claim.model.IdToken;
-import com.claim.model.TSAssignment;
 import com.claim.model.TSClass;
 import com.claim.model.User;
 import com.claim.repository.UserRepository;
 import com.claim.service.CoursesService;
-import com.claim.service.GoogleClassroomService;
 import com.claim.service.GoogleTokenVerifier;
 import com.claim.service.TokenVerifier;
 import com.google.api.services.classroom.model.Course;
 import com.google.api.services.classroom.model.CourseWork;
-import com.google.api.services.sheets.v4.model.Sheet;
 
 @CrossOrigin
 @RestController

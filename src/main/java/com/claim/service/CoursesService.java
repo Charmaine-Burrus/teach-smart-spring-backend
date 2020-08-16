@@ -1,10 +1,7 @@
 package com.claim.service;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
-import com.claim.model.TSAssignment;
 import com.claim.model.TSClass;
 import com.google.api.services.classroom.model.Course;
 import com.google.api.services.classroom.model.CourseWork;
